@@ -5,6 +5,7 @@ import childProcess from 'child_process';
 import glob from 'glob';
 import toml from 'toml';
 import tomlify from 'tomlify-j0.4';
+import  solidityStructure from 'solidity-structure';
 
 import { CONFIG_FILE, README_FILE, README_TARGET, DOXITYRC_FILE } from '../constants';
 
@@ -42,6 +43,9 @@ export default function ({ target, src, dir, whitelist, interaction }) {
       process.stdout.write(`Could not find source code for: ${contractName}, skipping\n`);
       return null;
     }
+
+    let contractStructure = solidityStructure.parseFile (fileName).toJSON();
+
     // get deploy info from truffle
     let address;
     if (interaction) {
@@ -60,6 +64,8 @@ export default function ({ target, src, dir, whitelist, interaction }) {
       address,
       name: contractName,
       // only pass these if they are whitelisted
+
+      structure : contractStructure,
       abi: myWhitelist.abi && JSON.parse(abi),
       bin: myWhitelist.bytecode && bin,
       opcodes: myWhitelist.bytecode && opcodes,
